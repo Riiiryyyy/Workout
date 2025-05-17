@@ -1,0 +1,103 @@
+package main
+
+import "fmt"
+
+type workout struct{
+	nama_workout string
+	jenis_latihan string
+	durasi int
+	kalori int
+	tanggal string
+}
+
+var dataWorkout []workout
+
+func main (){
+	var pilih int
+
+	for {
+		fmt.Println("Menu: ")
+		fmt.Println("1. Tambah workout")
+		fmt.Println("2. Ubah workout")
+		fmt.Println("3. Hapus workout")
+		fmt.Println("4. Cari workout")
+		fmt.Println("5. Urutkan workout")
+		fmt.Println("6. Laporan workout")
+		fmt.Println("7. Rekomendasi workout")
+		fmt.Println("8. Keluar")
+		fmt.Print("Pilih opsi: ")
+		fmt.Scanln(&pilih)
+		fmt.Println(" ")
+		switch pilih {
+		case 1:
+			tambahWorkout()
+		case 2:
+			ubahWorkout()
+		case 3:
+			hapusWorkout()
+		}
+	}
+}
+
+func tambahWorkout() {
+	var data workout
+	fmt.Println("== Tambah data workout ==")
+	fmt.Println(" ")
+	fmt.Print("Nama workout: ")
+	fmt.Scanln(&data.nama_workout)
+	fmt.Print("Jenis latihan (contoh: kardio, kekuatan, fleksibilitas): ")
+	fmt.Scanln(&data.jenis_latihan)
+	fmt.Print("Durasi latihan (menit): ")
+	fmt.Scanln(&data.durasi)
+	fmt.Print("Kalori yang terbakar: ")
+	fmt.Scanln(&data.kalori)
+	fmt.Print("Tanggal latihan (DD/MM/YYYY): ")
+	fmt.Scanln(&data.tanggal)
+	fmt.Println(" ")
+	dataWorkout = append(dataWorkout, data)
+}
+
+func tampilanDataWorkout(){
+	for i, data := range dataWorkout{
+		fmt.Printf("%d. %s | %s | %d menit | %d kal | %s \n", i+1, data.nama_workout, data.jenis_latihan, data.durasi, data.kalori, data.tanggal)
+	}
+}
+
+
+func ubahWorkout() {
+	var pilih int
+	tampilanDataWorkout()
+
+	fmt.Print("Pilih nomor workout yang ingin diubah: ")
+	fmt.Scanln(&pilih)
+	fmt.Print(" ")
+
+	terpilih:= &dataWorkout[pilih-1]
+
+	fmt.Println("== Ubah data workout ==")
+	fmt.Println(" ")
+	fmt.Print("Nama workout: ")
+	fmt.Scanln(&terpilih.nama_workout)
+	fmt.Print("Jenis latihan (contoh: kardio, kekuatan, fleksibilitas): ")
+	fmt.Scanln(&terpilih.jenis_latihan)
+	fmt.Print("Durasi latihan (menit): ")
+	fmt.Scanln(&terpilih.durasi)
+	fmt.Print("Kalori yang terbakar: ")
+	fmt.Scanln(&terpilih.kalori)
+	fmt.Print("Tanggal latihan (DD/MM/YYYY): ")
+	fmt.Scanln(&terpilih.tanggal)
+	fmt.Println(" ")
+}
+
+func hapusWorkout() {
+	var pilih int
+	fmt.Println("== Hapus data workout ==")
+	tampilanDataWorkout()
+
+	fmt.Print("Pilih nomor workout yang ingin dihapus: ")
+	fmt.Scanln(&pilih)
+	fmt.Print(" ")
+	
+	dataWorkout = append(dataWorkout[:pilih-1], dataWorkout[pilih:]...)
+
+}
