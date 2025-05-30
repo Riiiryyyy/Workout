@@ -1,103 +1,214 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
-type workout struct{
-	nama_workout string
-	jenis_latihan string
-	durasi int
-	kalori int
-	tanggal string
+type Workout struct {
+	Jenis   string
+	Durasi  int
+	Kalori  int
+	Tanggal string
 }
 
-var dataWorkout []workout
+var workouts = []Workout{
+	{"kekuatan", 20, 150, "25-05-2025"},
+	{"kardio", 30, 250, "26-05-2025"},
+	{"kekuatan", 15, 120, "27-05-2025"},
+	{"fleksibilitas", 40, 200, "28-05-2025"},
+}
 
-func main (){
-	var pilih int
+func tambahWorkout() {
+	var w Workout
+	fmt.Print("Masukkan jenis workout: ")
+	fmt.Scan(&w.Jenis)
+	fmt.Print("Masukkan durasi workout (menit): ")
+	fmt.Scan(&w.Durasi)
+	fmt.Print("Masukkan kalori terbakar: ")
+	fmt.Scan(&w.Kalori)
+	fmt.Print("Masukkan tanggal workout (DD-MM-YYYY): ")
+	fmt.Scan(&w.Tanggal)
+	workouts = append(workouts, w)
+}
 
+func ubahWorkout() {
+	tampilkanWorkouts()
+	var index int
+	fmt.Print("Masukkan indeks workout yang ingin diubah: ")
+	fmt.Scan(&index)
+	if index >= 0 && index < len(workouts) {
+		fmt.Print("Masukkan jenis workout baru: ")
+		fmt.Scan(&workouts[index].Jenis)
+		fmt.Print("Masukkan durasi baru: ")
+		fmt.Scan(&workouts[index].Durasi)
+		fmt.Print("Masukkan kalori baru: ")
+		fmt.Scan(&workouts[index].Kalori)
+		fmt.Print("Masukkan tanggal baru: ")
+		fmt.Scan(&workouts[index].Tanggal)
+	} else {
+		fmt.Println("Indeks tidak valid.")
+	}
+}
+
+func hapusWorkout() {
+	tampilkanWorkouts()
+	var index int
+	fmt.Print("Masukkan indeks workout yang ingin dihapus: ")
+	fmt.Scan(&index)
+	if index >= 0 && index < len(workouts) {
+		workouts = append(workouts[:index], workouts[index+1:]...)
+		fmt.Println("Workout berhasil dihapus.")
+	} else {
+		fmt.Println("Indeks tidak valid.")
+	}
+}
+
+func rekomendasiWorkout() {
+	if len(workouts) == 0 {
+		fmt.Println("Belum ada data workout.")
+		return
+	}
+	fmt.Println("Rekomendasi: ulangi workout terakhir yaitu", workouts[len(workouts)-1].Jenis)
+}
+
+func sequentialSearch(jenis string) {
+	ditemukan := false
+	for i, w := range workouts {
+		if w.Jenis == jenis {
+			fmt.Printf("Ditemukan di index %d: %+v\n", i, w)
+			ditemukan = true
+		}
+	}
+	if !ditemukan {
+		fmt.Println("Workout tidak ditemukan.")
+	}
+}
+
+func insertionSortJenis() {
+	for i := 1; i < len(workouts); i++ {
+		key := workouts[i]
+		j := i - 1
+		for j >= 0 && workouts[j].Jenis > key.Jenis {
+			workouts[j+1] = workouts[j]
+			j--
+		}
+		workouts[j+1] = key
+	}
+}
+
+func binarySearch(jenis string) {
+	insertionSortJenis()
+	low := 0
+	high := len(workouts) - 1
+	for low <= high {
+		mid := (low + high) / 2
+		if workouts[mid].Jenis == jenis {
+			fmt.Printf("Ditemukan di index %d: %+v\n", mid, workouts[mid])
+			return
+		} else if workouts[mid].Jenis < jenis {
+			low = mid + 1
+		} else {
+		high = mid - 1
+		}
+	}
+	fmt.Println("Workout tidak ditemukan.")
+}
+
+func selectionSortDurasi() {
+	n := len(workouts)
+	for i := 0; i < n-1; i++ {
+		minIdx := i
+		for j := i + 1; j < n; j++ {
+			if workouts[j].Durasi < workouts[minIdx].Durasi {
+				minIdx = j
+			}
+		}
+		workouts[i], workouts[minIdx] = workouts[minIdx], workouts[i]
+	}
+}
+
+func insertionSortKalori() {
+	for i := 1; i < len(workouts); i++ {
+		key := workouts[i]
+		j := i - 1
+		for j >= 0 && workouts[j].Kalori > key.Kalori {
+			workouts[j+1] = workouts[j]
+			j--
+		}
+		workouts[j+1] = key
+	}
+}
+
+func laporan() {
+	total := 0
+	fmt.Println("10 aktivitas terakhir:")
+	mulai := 0
+	if len(workouts) > 10 {
+		mulai = len(workouts) - 10
+	}
+	for i := len(workouts) - 1; i >= mulai; i-- {
+		fmt.Printf("[%d] %+v\n", i, workouts[i])
+		total += workouts[i].Kalori
+	}
+	fmt.Println("Total kalori terbakar:", total)
+}
+
+func tampilkanWorkouts() {
+	for i, w := range workouts {
+		fmt.Printf("[%d] %+v\n", i, w)
+	}
+}
+
+func main() {
 	for {
-		fmt.Println("Menu: ")
-		fmt.Println("1. Tambah workout")
-		fmt.Println("2. Ubah workout")
-		fmt.Println("3. Hapus workout")
-		fmt.Println("4. Cari workout")
-		fmt.Println("5. Urutkan workout")
-		fmt.Println("6. Laporan workout")
-		fmt.Println("7. Rekomendasi workout")
-		fmt.Println("8. Keluar")
-		fmt.Print("Pilih opsi: ")
-		fmt.Scanln(&pilih)
-		fmt.Println(" ")
-		switch pilih {
+		fmt.Println("\nMenu:")
+		fmt.Println("1. Tambah Workout")
+		fmt.Println("2. Ubah Workout")
+		fmt.Println("3. Hapus Workout")
+		fmt.Println("4. Rekomendasi Workout")
+		fmt.Println("5. Pencarian Workout (Sequential)")
+		fmt.Println("6. Pencarian Workout (Binary)")
+		fmt.Println("7. Pengurutan Durasi (Selection Sort)")
+		fmt.Println("8. Pengurutan Kalori (Insertion Sort)")
+		fmt.Println("9. Laporan")
+		fmt.Println("0. Keluar")
+
+		var pilihan int
+		fmt.Print("Pilih menu: ")
+		fmt.Scan(&pilihan)
+
+		switch pilihan {
 		case 1:
 			tambahWorkout()
 		case 2:
 			ubahWorkout()
 		case 3:
 			hapusWorkout()
+		case 4:
+			rekomendasiWorkout()
+		case 5:
+			var jenis string
+			fmt.Print("Masukkan jenis workout: ")
+			fmt.Scan(&jenis)
+			sequentialSearch(jenis)
+		case 6:
+			var jenis string
+			fmt.Print("Masukkan jenis workout: ")
+			fmt.Scan(&jenis)
+			binarySearch(jenis)
+		case 7:
+			selectionSortDurasi()
+			tampilkanWorkouts()
+		case 8:
+			insertionSortKalori()
+			tampilkanWorkouts()
+		case 9:
+			laporan()
+		case 0:
+			fmt.Println("Terima kasih!")
+			return
+		default:
+			fmt.Println("Pilihan tidak valid.")
 		}
 	}
-}
-
-func tambahWorkout() {
-	var data workout
-	fmt.Println("== Tambah data workout ==")
-	fmt.Println(" ")
-	fmt.Print("Nama workout: ")
-	fmt.Scanln(&data.nama_workout)
-	fmt.Print("Jenis latihan (contoh: kardio, kekuatan, fleksibilitas): ")
-	fmt.Scanln(&data.jenis_latihan)
-	fmt.Print("Durasi latihan (menit): ")
-	fmt.Scanln(&data.durasi)
-	fmt.Print("Kalori yang terbakar: ")
-	fmt.Scanln(&data.kalori)
-	fmt.Print("Tanggal latihan (DD/MM/YYYY): ")
-	fmt.Scanln(&data.tanggal)
-	fmt.Println(" ")
-	dataWorkout = append(dataWorkout, data)
-}
-
-func tampilanDataWorkout(){
-	for i, data := range dataWorkout{
-		fmt.Printf("%d. %s | %s | %d menit | %d kal | %s \n", i+1, data.nama_workout, data.jenis_latihan, data.durasi, data.kalori, data.tanggal)
-	}
-}
-
-
-func ubahWorkout() {
-	var pilih int
-	tampilanDataWorkout()
-
-	fmt.Print("Pilih nomor workout yang ingin diubah: ")
-	fmt.Scanln(&pilih)
-	fmt.Print(" ")
-
-	terpilih:= &dataWorkout[pilih-1]
-
-	fmt.Println("== Ubah data workout ==")
-	fmt.Println(" ")
-	fmt.Print("Nama workout: ")
-	fmt.Scanln(&terpilih.nama_workout)
-	fmt.Print("Jenis latihan (contoh: kardio, kekuatan, fleksibilitas): ")
-	fmt.Scanln(&terpilih.jenis_latihan)
-	fmt.Print("Durasi latihan (menit): ")
-	fmt.Scanln(&terpilih.durasi)
-	fmt.Print("Kalori yang terbakar: ")
-	fmt.Scanln(&terpilih.kalori)
-	fmt.Print("Tanggal latihan (DD/MM/YYYY): ")
-	fmt.Scanln(&terpilih.tanggal)
-	fmt.Println(" ")
-}
-
-func hapusWorkout() {
-	var pilih int
-	fmt.Println("== Hapus data workout ==")
-	tampilanDataWorkout()
-
-	fmt.Print("Pilih nomor workout yang ingin dihapus: ")
-	fmt.Scanln(&pilih)
-	fmt.Print(" ")
-	
-	dataWorkout = append(dataWorkout[:pilih-1], dataWorkout[pilih:]...)
-
 }
